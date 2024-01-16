@@ -34,7 +34,7 @@ repos:
 
       - id: mypy
         name: Typecheck with mypy
-        entry: poetry run mypy src
+        entry: poetry run mypy src --explicit-package-bases
         pass_filenames: false
         types: [python]
         language: system

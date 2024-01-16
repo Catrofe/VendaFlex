@@ -3,9 +3,8 @@ from fastapi.responses import JSONResponse
 
 
 class ExceptionHandler:
-
     @staticmethod
-    def handler(request: Request, exception: Exception):
+    def handler(request: Request, exception: Exception) -> JSONResponse:
         return JSONResponse(
             status_code=500,
             content={"message": "Internal Server Error"},

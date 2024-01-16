@@ -9,9 +9,9 @@ readme = "README.md"
 python = "^3.10"
 fastapi = "^0.109.0"
 uvicorn = "^0.25.0"
-sqlalchemy2-stubs = "^0.0.2a38"
 sqlalchemy = {extras = ["asyncio"], version = "^2.0.25"}
 asyncpg = "^0.29.0"
+pydantic-settings = "^2.1.0"
 
 
 [tool.poetry.group.dev.dependencies]
