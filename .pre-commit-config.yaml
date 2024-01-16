@@ -1,0 +1,49 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-toml
+      - id: check-yaml
+      - id: detect-private-key
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: black
+        name: Format code with black
+        entry: poetry run black
+        pass_filenames: true
+        types: [python]
+        language: system
+
+      - id: isort
+        args: ["--profile", "black"]
+        name: Sort imports with isort
+        entry: poetry run isort
+        pass_filenames: true
+        types: [python]
+        language: system
+
+      - id: flake8
+        name: Check style with flake8
+        entry: poetry run flake8
+        pass_filenames: true
+        types: [python]
+        language: system
+
+      - id: mypy
+        name: Typecheck with mypy
+        entry: poetry run mypy src
+        pass_filenames: false
+        types: [python]
+        language: system
+
+#      - id: pytest-commit
+#        name: Run tests with pytest
+##        entry: poetry run pytest --random-order --cov-fail-under=80
+#        entry: poetry run pytest --random-order
+#        pass_filenames: false
+#        language: system
+#        types: [python]
+#        stages: [commit]
