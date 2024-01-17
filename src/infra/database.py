@@ -58,7 +58,7 @@ class User(Base):
     phone: Mapped[str] = mapped_column(unique=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
-    updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now())
+    updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now(), nullable=True)
 
 
 class Order(Base):

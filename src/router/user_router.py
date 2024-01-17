@@ -1,5 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
+from src.models.user_model import UserModel, UserModelOut
 from src.service.user_service import UserService
 
 service = UserService()
@@ -7,9 +8,9 @@ service = UserService()
 router = APIRouter()
 
 
-@router.post("/user")
-async def create_user() -> None:
-    raise HTTPException(status_code=501, detail="Not implemented")
+@router.post("/user", status_code=201, response_model=UserModelOut)
+async def create_user(user: UserModel) -> UserModelOut:
+    return await service.create_user(user)
 
 
 @router.get("/user/{user_id}")

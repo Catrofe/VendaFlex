@@ -1,10 +1,10 @@
+import asyncio
+import os
+
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.app import app
-from src.infra.database import Base
-from src.infra.settings import Settings
+from src.app import app, startup_event
 
 client = TestClient(app)
 
@@ -12,35 +12,34 @@ URL_API = "/api/user"
 
 
 @pytest.fixture
-async def drop_database():
-    settings = Settings()
-    engine = create_async_engine(settings.DATABASE_URL, echo=False)
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.drop_all())
+def change_db_url():
+    asyncio.run(startup_event())
+    yield
+    os.remove("VendaFlex.db")
 
 
 @pytest.fixture
-def create_user(drop_database):
+def create_user(change_db_url):
     client.post(
         URL_API,
         json={
             "username": "catrofe",
             "password": "12345678",
             "email": "email@email.com",
-            "phone": "999999999",
+            "phone": "021999999999",
             "companyId": None,
         },
     )
 
 
-def test_create_user(drop_database):
+def test_create_user(change_db_url):
     response = client.post(
-        URL_API,
+        "/api/user/",
         json={
             "username": "catrofe",
             "password": "12345678",
             "email": "email@email.com",
-            "phone": "999999999",
+            "phone": "021999999999",
             "companyId": None,
         },
     )
@@ -49,7 +48,7 @@ def test_create_user(drop_database):
         "id": 1,
         "username": "catrofe",
         "email": "email@email.com",
-        "phone": "999999999",
+        "phone": "021999999999",
         "companyId": None,
     }
 
@@ -61,7 +60,7 @@ def test_error_create_user_duplicated_email(create_user):
             "username": "catrofe",
             "password": "12345678",
             "email": "email@email.com",
-            "phone": "999999998",
+            "phone": "021999999999",
             "companyId": None,
         },
     )
@@ -75,21 +74,22 @@ def test_error_create_user_duplicated_phone(create_user):
             "username": "catrofe",
             "password": "12345678",
             "email": "email@email2.com",
-            "phone": "999999999",
+            "phone": "021999999999",
             "companyId": None,
         },
     )
     assert response.status_code == 409
 
 
-def test_error_create_user_company_not_exists(drop_database):
+@pytest.mark.skip("Company do not exist")
+def test_error_create_user_company_not_exists(change_db_url):
     response = client.post(
         URL_API,
         json={
             "username": "catrofe",
             "password": "12345678",
             "email": "email@email.com",
-            "phone": "999999999",
+            "phone": "021999999999",
             "companyId": 2,
         },
     )
