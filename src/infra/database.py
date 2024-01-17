@@ -56,7 +56,7 @@ class User(Base):
     password: Mapped[str]
     email: Mapped[str] = mapped_column(unique=True)
     phone: Mapped[str] = mapped_column(unique=True)
-    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"))
+    company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now())
 
