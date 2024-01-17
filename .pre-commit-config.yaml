@@ -39,11 +39,11 @@ repos:
         types: [python]
         language: system
 
-#      - id: pytest-commit
-#        name: Run tests with pytest
-##        entry: poetry run pytest --random-order --cov-fail-under=80
-#        entry: poetry run pytest --random-order
-#        pass_filenames: false
-#        language: system
-#        types: [python]
-#        stages: [commit]
+      - id: pytest-commit
+        name: Run tests with pytest
+#        entry: poetry run pytest --random-order --cov-fail-under=80
+        entry: poetry run pytest --random-order
+        pass_filenames: false
+        language: system
+        types: [python]
+        stages: [commit]
