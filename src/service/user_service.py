@@ -22,3 +22,9 @@ class UserService:
         )
         if exists:
             raise HTTPException(status_code=409, detail="User already exists")
+
+    async def get_user_by_id(self, user_id: int) -> UserModelOut:
+        user = await self._repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        return user

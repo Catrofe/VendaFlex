@@ -94,3 +94,20 @@ def test_error_create_user_company_not_exists(change_db_url):
         },
     )
     assert response.status_code == 400
+
+
+def test_get_user(create_user):
+    response = client.get(f"{URL_API}/1")
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "username": "catrofe",
+        "email": "email@email.com",
+        "phone": "021999999999",
+        "companyId": None,
+    }
+
+
+def test_get_user_not_found(change_db_url):
+    response = client.get(f"{URL_API}/1")
+    assert response.status_code == 404

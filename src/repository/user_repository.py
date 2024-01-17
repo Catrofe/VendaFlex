@@ -1,7 +1,10 @@
+from typing import Optional
+
 from sqlalchemy import select
+from sqlalchemy.orm import Bundle
 
 from src.infra.database import User, get_session_maker
-from src.models.user_model import UserModel
+from src.models.user_model import UserModel, UserModelOut
 
 
 class UserRepository:
@@ -28,3 +31,31 @@ class UserRepository:
             )
 
         return bool(query.scalar())
+
+    async def get_user_by_id(self, user_id: int) -> Optional[UserModelOut]:
+        async with self._session_maker() as session:
+            query = await session.execute(
+                select(
+                    Bundle(
+                        "user",
+                        User.id,
+                        User.username,
+                        User.phone,
+                        User.email,
+                        User.company_id,
+                    )
+                ).where(User.id == user_id)
+            )
+
+            user = query.scalar()
+            return (
+                UserModelOut(
+                    id=user[0],
+                    username=user[1],
+                    phone=user[2],
+                    email=user[3],
+                    companyId=user[4],
+                )
+                if user
+                else None
+            )

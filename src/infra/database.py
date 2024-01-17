@@ -5,7 +5,7 @@ from typing import Any
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from src.infra.settings import Settings
 
@@ -59,29 +59,3 @@ class User(Base):
     company_id: Mapped[int] = mapped_column(ForeignKey("companies.id"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now(), nullable=True)
-
-
-class Order(Base):
-    __tablename__ = "orders"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    price: Mapped[float]
-    installments: Mapped[int]
-    sold: Mapped[bool] = mapped_column(default=False)
-    canceled_sale: Mapped[bool] = mapped_column(default=False)
-    installments_details: Mapped[list["Installments"]] = relationship(
-        back_populates="order"
-    )
-    created_at: Mapped[datetime] = mapped_column(default=datetime.now())
-    updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now())
-
-
-class Installments(Base):
-    __tablename__ = "installments"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-    order_id: Mapped[int] = mapped_column(ForeignKey("orders.id"))
-    price: Mapped[float]
-    number_installments: Mapped[int]
-    due_date: Mapped[datetime]

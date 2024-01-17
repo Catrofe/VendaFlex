@@ -13,9 +13,9 @@ async def create_user(user: UserModel) -> UserModelOut:
     return await service.create_user(user)
 
 
-@router.get("/user/{user_id}")
-async def get_user() -> None:
-    raise HTTPException(status_code=501, detail="Not implemented")
+@router.get("/user/{user_id}", status_code=200, response_model=UserModelOut)
+async def get_user(user_id: int) -> UserModelOut:
+    return await service.get_user_by_id(user_id)
 
 
 @router.get("/user/{company_id}")
