@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 
 import src.handlers as handlers
 from src.infra.database import create_database
+from src.router.user_router import router as user_router
 
 app = FastAPI()
 
@@ -32,3 +33,4 @@ async def health() -> None:
 
 
 handlers.register_handlers(app)
+app.include_router(user_router, prefix=f"{BASE_PATH}", tags=["User"])
