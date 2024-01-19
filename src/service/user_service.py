@@ -2,7 +2,7 @@ from typing import Optional
 
 from fastapi import HTTPException
 
-from src.models.user_model import UserModel, UserModelEdit, UserModelOut
+from src.models.user_model import Password, UserModel, UserModelEdit, UserModelOut
 from src.repository.user_repository import UserRepository
 from src.service.BcryptService import BcryptService
 
@@ -47,3 +47,11 @@ class UserService:
             raise HTTPException(status_code=404, detail="User not found")
 
         await self._repository.delete_user(user)
+
+    async def change_password(self, user_id: int, password: Password) -> UserModelOut:
+        user = await self._repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        user.password = self._encrypted.hash_password(password.password)
+        user = await self._repository.update_user(user, UserModelEdit())
+        return UserModelOut(**user.__dict__)

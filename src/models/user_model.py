@@ -24,3 +24,7 @@ class UserModelEdit(BaseModel):
     email: Optional[str] = None
     phone: Optional[str] = None
     company_id: Optional[int] = None
+
+
+class Password(BaseModel):
+    password: str = Field(min_length=8, max_length=155)

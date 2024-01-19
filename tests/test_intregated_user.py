@@ -187,3 +187,30 @@ def test_delete_user_sucess(create_user):
 
     get_user = client.get(f"{URL_API}/1")
     assert get_user.status_code == 404
+
+
+def test_change_password_not_found(change_db_url):
+    response = client.patch(
+        f"{URL_API}/1",
+        json={
+            "password": "12345678",
+        },
+    )
+    assert response.status_code == 404
+
+
+def test_change_password_sucess(create_user):
+    response = client.patch(
+        f"{URL_API}/1",
+        json={
+            "password": "12345678",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "username": "catrofe",
+        "email": "email@email.com",
+        "phone": "021999999999",
+        "companyId": None,
+    }

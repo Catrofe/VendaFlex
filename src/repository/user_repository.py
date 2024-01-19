@@ -50,3 +50,9 @@ class UserRepository:
         async with self._session_maker() as session:
             await session.delete(user)
             await session.commit()
+
+    async def update_password(self, user: User, password: str) -> User:
+        async with self._session_maker() as session:
+            user.password = password
+            await session.commit()
+        return user
