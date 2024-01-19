@@ -40,3 +40,10 @@ class UserService:
 
         user_db = await self._repository.update_user(user, request)
         return UserModelOut(**user_db.__dict__)
+
+    async def delete_user(self, user_id: int) -> None:
+        user = await self._repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        await self._repository.delete_user(user)

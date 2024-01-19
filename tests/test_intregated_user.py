@@ -174,3 +174,16 @@ def test_edit_username(create_user):
         "phone": "021999999999",
         "companyId": None,
     }
+
+
+def test_delete_user_not_found(change_db_url):
+    response = client.delete(f"{URL_API}/1")
+    assert response.status_code == 404
+
+
+def test_delete_user_sucess(create_user):
+    response = client.delete(f"{URL_API}/1")
+    assert response.status_code == 204
+
+    get_user = client.get(f"{URL_API}/1")
+    assert get_user.status_code == 404

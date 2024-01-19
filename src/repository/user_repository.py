@@ -36,7 +36,7 @@ class UserRepository:
             query = await session.exec(select(User).where(User.id == user_id))
             user = query.first()
 
-        return user if user else None
+        return user or None
 
     async def update_user(self, user: User, request: UserModelEdit) -> User:
         user_edit = request.model_dump(exclude_defaults=True)
@@ -45,3 +45,8 @@ class UserRepository:
                 setattr(user, key, value)
             await session.commit()
         return user
+
+    async def delete_user(self, user: User) -> None:
+        async with self._session_maker() as session:
+            await session.delete(user)
+            await session.commit()

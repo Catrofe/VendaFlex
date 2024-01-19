@@ -18,7 +18,7 @@ async def get_user(user_id: int) -> UserModelOut:
     return await service.get_user_by_id(user_id)
 
 
-@router.get("/user/{company_id}")
+@router.get("/user/company/{company_id}")
 async def get_users_by_company() -> None:
     raise HTTPException(status_code=501, detail="Not implemented")
 
@@ -28,9 +28,9 @@ async def update_user(user_id: int, user_edit: UserModelEdit) -> UserModelOut:
     return await service.update_user(user_id, user_edit)
 
 
-@router.delete("/user/{user_id}")
-async def delete_user() -> None:
-    raise HTTPException(status_code=501, detail="Not implemented")
+@router.delete("/user/{user_id}", response_model=None, status_code=204)
+async def delete_user(user_id: int) -> None:
+    await service.delete_user(user_id)
 
 
 @router.patch("/user/{user_id}")
