@@ -2,7 +2,6 @@ from typing import Optional
 
 from fastapi import HTTPException
 
-from src.infra.database import User
 from src.models.user_model import UserModel, UserModelEdit, UserModelOut
 from src.repository.user_repository import UserRepository
 from src.service.BcryptService import BcryptService
@@ -36,7 +35,7 @@ class UserService:
         await self.verify_if_user_exists(request.username, request.email, request.phone)
 
         user = await self._repository.get_user_by_id(user_id)
-        if not isinstance(user, User):
+        if not user:
             raise HTTPException(status_code=404, detail="User not found")
 
         user_db = await self._repository.update_user(user, request)
