@@ -111,3 +111,66 @@ def test_get_user(create_user):
 def test_get_user_not_found(change_db_url):
     response = client.get(f"{URL_API}/1")
     assert response.status_code == 404
+
+
+def test_edit_user_not_foud(change_db_url):
+    response = client.put(
+        f"{URL_API}/1",
+        json={
+            "username": "catrofe",
+            "email": "email@email.com",
+            "phone": "021999999999",
+            "companyId": None,
+        },
+    )
+    assert response.status_code == 404
+
+
+def test_edit_user_conflict_email(create_user):
+    response = client.put(
+        f"{URL_API}/1",
+        json={
+            "username": "catrofe",
+            "email": "email@email.com",
+            "phone": "021999999999",
+            "companyId": None,
+        },
+    )
+    assert response.status_code == 409
+
+
+def test_edit_user_sucess(create_user):
+    response = client.put(
+        f"{URL_API}/1",
+        json={
+            "username": "catrofinho",
+            "email": "email2@email.com",
+            "phone": "021999999998",
+            "companyId": None,
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "username": "catrofinho",
+        "email": "email2@email.com",
+        "phone": "021999999998",
+        "companyId": None,
+    }
+
+
+def test_edit_username(create_user):
+    response = client.put(
+        f"{URL_API}/1",
+        json={
+            "username": "catrofinho",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "username": "catrofinho",
+        "email": "email@email.com",
+        "phone": "021999999999",
+        "companyId": None,
+    }

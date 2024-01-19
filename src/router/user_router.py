@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 
-from src.models.user_model import UserModel, UserModelOut
+from src.models.user_model import UserModel, UserModelEdit, UserModelOut
 from src.service.user_service import UserService
 
 service = UserService()
@@ -23,9 +23,9 @@ async def get_users_by_company() -> None:
     raise HTTPException(status_code=501, detail="Not implemented")
 
 
-@router.put("/user/{user_id}")
-async def update_user() -> None:
-    raise HTTPException(status_code=501, detail="Not implemented")
+@router.put("/user/{user_id}", response_model=UserModelOut, status_code=200)
+async def update_user(user_id: int, user_edit: UserModelEdit) -> UserModelOut:
+    return await service.update_user(user_id, user_edit)
 
 
 @router.delete("/user/{user_id}")

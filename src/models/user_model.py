@@ -16,4 +16,11 @@ class UserModelOut(BaseModel):
     username: str
     email: str
     phone: str
-    companyId: Optional[int] = None
+    company_id: Optional[int] = Field(alias="companyId", default=None)
+
+
+class UserModelEdit(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company_id: Optional[int] = None
