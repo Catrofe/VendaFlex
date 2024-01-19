@@ -3,10 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Optional
 
-from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import sessionmaker as session
 from sqlalchemy.sql.schema import Column
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlmodel import Field, SQLModel
+from sqlmodel.ext.asyncio.session import AsyncSession
 
 from src.infra.settings import Settings
 
@@ -16,7 +18,7 @@ engine = create_async_engine(settings.DATABASE_URL, echo=False)
 
 
 def get_session_maker() -> Any:
-    return async_sessionmaker(engine, expire_on_commit=False)
+    return session(engine, class_=AsyncSession, expire_on_commit=False)  # type: ignore
 
 
 async def create_database() -> None:
@@ -44,4 +46,5 @@ class User(SQLModel, table=True):
     )
     created_at: Optional[datetime] = Field(default=datetime.now())
     updated_at: Optional[datetime] = Field(
-        sa_column=Column("updated_at", DateTime, onupdate=datetime.now()))
+        sa_column=Column("updated_at", DateTime, onupdate=datetime.now())
+    )
