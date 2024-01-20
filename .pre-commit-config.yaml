@@ -41,7 +41,7 @@ repos:
 
       - id: pytest-commit
         name: Run tests with pytest
-        entry: poetry run pytest --random-order --cov-fail-under=80 --cov-report=term-missing --cov-report=html
+        entry: poetry run pytest --random-order --cov-fail-under=90
 #        entry: poetry run pytest --random-order
         pass_filenames: false
         language: system

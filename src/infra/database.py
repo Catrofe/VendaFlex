@@ -59,5 +59,7 @@ class User(Base):
     phone: Mapped[str] = mapped_column(unique=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=True)
     company_owner: Mapped[bool] = mapped_column(default=False)
+    token_signature: Mapped[str] = mapped_column(nullable=True)
+    refresh_signature: Mapped[str] = mapped_column(nullable=True)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now(), nullable=True)

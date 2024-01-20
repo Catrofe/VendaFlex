@@ -105,3 +105,8 @@ def test_delete_hub(create_hub):
 
     get_hub = client.get(f"{URL_API}/1")
     assert get_hub.status_code == 404
+
+
+def test_delete_hub_not_found(change_db_url):
+    response = client.delete(f"{URL_API}/1")
+    assert response.status_code == 404
