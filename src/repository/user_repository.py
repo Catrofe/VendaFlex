@@ -1,6 +1,6 @@
 from typing import Optional
 
-from sqlmodel import select
+from sqlalchemy import delete, select
 
 from src.infra.database import User, get_session_maker
 from src.models.user_model import UserModel, UserModelEdit
@@ -21,7 +21,7 @@ class UserRepository:
         self, username: Optional[str], email: Optional[str], phone: Optional[str]
     ) -> bool:
         async with self._session_maker() as session:
-            query = await session.exec(
+            query = await session.execute(
                 select(User).where(
                     (User.username == username)
                     | (User.email == email)
@@ -33,8 +33,8 @@ class UserRepository:
 
     async def get_user_by_id(self, user_id: int) -> Optional[User]:
         async with self._session_maker() as session:
-            query = await session.exec(select(User).where(User.id == user_id))
-            user = query.first()
+            query = await session.execute(select(User).where(User.id == user_id))
+            user = query.scalar()
 
         return user or None
 
@@ -48,7 +48,7 @@ class UserRepository:
 
     async def delete_user(self, user: User) -> None:
         async with self._session_maker() as session:
-            await session.delete(user)
+            await session.execute(delete(User).where(User.id == user.id))
             await session.commit()
 
     async def update_password(self, user: User, password: str) -> User:

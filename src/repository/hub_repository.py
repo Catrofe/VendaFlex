@@ -1,8 +1,8 @@
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import HTTPException
-from sqlmodel import select
+from sqlalchemy import delete, select
 
 from src.infra.database import Company, Hub, User, get_session_maker
 from src.models.hub_model import CompanyMain, CreateNewHub, HubBase, HubEdit, UserMain
@@ -55,20 +55,21 @@ class HubRepository:
             return hub
         except Exception as e:
             logging.info("Error creating new hub, rolling back")
+            logging.info(e)
             async with self.session() as session:
                 await session.rollback()
             raise HTTPException(status_code=500, detail="Internal server error") from e
 
     async def get_hub_by_id(self, hub_id: int) -> Optional[Hub]:
         async with self.session() as session:
-            query = await session.exec(select(Hub).where(Hub.id == hub_id))
-            hub = query.first()
+            query = await session.execute(select(Hub).where(Hub.id == hub_id))
+            hub = query.scalar()
         return hub or None
 
-    async def get_all_hubs(self) -> list[Hub]:
+    async def get_all_hubs(self) -> Any:
         async with self.session() as session:
-            hubs = await session.exec(select(Hub))
-            return hubs.all()  # type: ignore
+            hubs = await session.execute(select(Hub))
+            return hubs.scalars()
 
     async def update_hub(self, hub: Hub, request: HubEdit) -> Hub:
         async with self.session() as session:
@@ -80,5 +81,5 @@ class HubRepository:
 
     async def delete_hub(self, hub: Hub) -> None:
         async with self.session() as session:
-            await session.delete(hub)
+            await session.execute(delete(Hub).where(Hub.id == hub.id))
             await session.commit()
