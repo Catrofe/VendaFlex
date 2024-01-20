@@ -81,5 +81,12 @@ class HubRepository:
 
     async def delete_hub(self, hub: Hub) -> None:
         async with self.session() as session:
+            query_company = await session.execute(
+                select(Company).where(Company.hub_id == hub.id)
+            )
+            company = query_company.scalar()
+
+            await session.execute(delete(User).where(User.company_id == company.id))
+            await session.execute(delete(Company).where(Company.id == company.id))
             await session.execute(delete(Hub).where(Hub.id == hub.id))
             await session.commit()
