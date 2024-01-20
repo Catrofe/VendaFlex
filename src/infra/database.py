@@ -5,8 +5,6 @@ from typing import Any, Optional
 
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker as session
-from sqlalchemy.sql.schema import Column
-from sqlalchemy.sql.sqltypes import DateTime
 from sqlmodel import Field, SQLModel
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -26,13 +24,23 @@ async def create_database() -> None:
         await conn.run_sync(SQLModel.metadata.create_all)
 
 
+class Hub(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True)
+    name: str = Field(min_length=2, max_length=155)
+    description: Optional[str] = Field(min_length=2, max_length=1000)
+    created_at: datetime = Field(default=datetime.now())
+
+
 class Company(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str = Field(min_length=2, max_length=155)
-    phone: str = Field(min_length=10, max_length=20)
-    email: str = Field(min_length=8, max_length=155)
-    created_at: Optional[datetime] = Field(default=None)
-    updated_at: Optional[datetime] = Field(default=None, nullable=True)
+    cnpj: str = Field(unique=True, min_length=14, max_length=14)
+    hub_id: Optional[int] = Field(
+        default=None,
+        foreign_key="hub.id",
+    )
+    company_admin: Optional[bool] = Field(default=False)
+    created_at: Optional[datetime] = Field(default=datetime.now())
 
 
 class User(SQLModel, table=True):
@@ -44,7 +52,5 @@ class User(SQLModel, table=True):
     company_id: Optional[int] = Field(
         default=None, nullable=True, foreign_key="company.id"
     )
+    company_owner: Optional[bool] = Field(default=False)
     created_at: Optional[datetime] = Field(default=datetime.now())
-    updated_at: Optional[datetime] = Field(
-        sa_column=Column("updated_at", DateTime, onupdate=datetime.now())
-    )
