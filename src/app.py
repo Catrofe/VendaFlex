@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse
 
 import src.handlers as handlers
 from src.infra.database import create_database
+from src.router.auth_router import router as auth_router
 from src.router.hub_router import router as hub_router
 from src.router.user_router import router as user_router
 
@@ -36,3 +37,4 @@ async def health() -> None:
 handlers.register_handlers(app)
 app.include_router(user_router, prefix=f"{BASE_PATH}", tags=["User"])
 app.include_router(hub_router, prefix=f"{BASE_PATH}", tags=["Hub"])
+app.include_router(auth_router, prefix=f"{BASE_PATH}", tags=["Auth"])

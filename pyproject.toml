@@ -13,6 +13,7 @@ asyncpg = "^0.29.0"
 pydantic-settings = "^2.1.0"
 bcrypt = "^4.1.2"
 sqlalchemy = "^2.0.25"
+pyjwt = "^2.8.0"
 
 
 [tool.poetry.group.dev.dependencies]
