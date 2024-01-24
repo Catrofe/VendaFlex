@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import Optional
 
 import jwt
@@ -33,11 +34,12 @@ class HasAuthRole:
             )
             token_data = TokenData(**token_decoded)
             request.state.user = token_data
-        except jwt.ExpiredSignatureError as e:
-            raise HTTPException(status_code=401) from e
-        except jwt.InvalidSignatureError as e:
-            raise HTTPException(status_code=401) from e
-        except jwt.InvalidTokenError as e:
+        except (
+            jwt.ExpiredSignatureError,
+            jwt.InvalidSignatureError,
+            jwt.InvalidTokenError,
+        ) as e:
+            logging.info(e)
             raise HTTPException(status_code=401) from e
 
         await self.verify_role(token_data)
