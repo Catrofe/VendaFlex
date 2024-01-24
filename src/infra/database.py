@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
@@ -60,7 +60,7 @@ class User(Base):
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=True)
     company_owner: Mapped[bool] = mapped_column(default=False)
     admin: Mapped[bool] = mapped_column(default=False)
-    refresh_token: Mapped[str] = mapped_column(nullable=True, default=None)
-    acess_token: Mapped[str] = mapped_column(nullable=True, default=None)
+    refresh_token: Mapped[Optional[str]] = mapped_column(nullable=True, default=None)
+    acess_token: Mapped[Optional[str]] = mapped_column(nullable=True, default=None)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now(), nullable=True)

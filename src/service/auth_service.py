@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional
 
 from fastapi import HTTPException
 
@@ -25,7 +26,7 @@ class AuthService:
         user = await self.update_assignature_token(user)
         return await self._jwt.create_token(user)
 
-    async def get_user_by_id(self, user_id: int, refresh: bool) -> str:
+    async def get_user_by_id(self, user_id: int, refresh: bool) -> Optional[str]:
         user = await self._repository.get_user_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
@@ -35,3 +36,9 @@ class AuthService:
         return await self._repository.update_signature_token(
             user, str(uuid.uuid4()), str(uuid.uuid4())
         )
+
+    async def logout(self, user_id: int) -> None:
+        user = await self._repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        await self._repository.update_signature_token(user, None, None)

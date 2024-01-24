@@ -1,4 +1,5 @@
 import datetime
+from typing import Optional
 
 import jwt
 from fastapi import HTTPException, Request
@@ -22,6 +23,8 @@ class HasAuthRole:
         try:
             token = request.headers["Authorization"].replace("Bearer ", "")
             signature, lee_way = await self.generate_signature(token)
+            if not signature:
+                raise HTTPException(status_code=401)
             token_decoded = jwt.decode(
                 token,
                 signature,
@@ -46,7 +49,7 @@ class HasAuthRole:
         if self.admin and not token_data.admin and not token_data.company_owner:
             raise HTTPException(status_code=403, detail="User is not admin")
 
-    async def generate_signature(self, token: str) -> tuple[str, int]:
+    async def generate_signature(self, token: str) -> tuple[Optional[str], int]:
         signature = await self.verify_if_user_exists(token)
         lee_way = (
             self.settings.REFRESH_TOKEN_EXPIRE_MINUTES
@@ -55,6 +58,6 @@ class HasAuthRole:
         )
         return signature, lee_way
 
-    async def verify_if_user_exists(self, token: str) -> str:
+    async def verify_if_user_exists(self, token: str) -> Optional[str]:
         token_decoded = jwt.decode(token, options={"verify_signature": False})
         return await self.auth_service.get_user_by_id(token_decoded["id"], self.refresh)

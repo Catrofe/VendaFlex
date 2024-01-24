@@ -24,7 +24,7 @@ class AuthRepository:
         return user or None
 
     async def update_signature_token(
-        self, user: User, access_token: str, refresh_token: str
+        self, user: User, access_token: Optional[str], refresh_token: Optional[str]
     ) -> User:
         async with self._session_maker() as session:
             user.acess_token = access_token
