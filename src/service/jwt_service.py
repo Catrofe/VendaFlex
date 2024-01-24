@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import jwt
 
@@ -13,14 +13,14 @@ class JWTService:
 
     async def create_token(self, user: User) -> TokenModel:
         return TokenModel(
-            access_token=await self.generate_token(
+            acessToken=await self.generate_token(
                 user, False, self.settings.ACCESS_TOKEN_EXPIRE_MINUTES
             ),
-            refresh_token=await self.generate_token(
+            refreshToken=await self.generate_token(
                 user, True, self.settings.REFRESH_TOKEN_EXPIRE_MINUTES
             ),
-            token_expires_in=self.settings.ACCESS_TOKEN_EXPIRE_MINUTES,
-            refresh_token_expires_in=self.settings.REFRESH_TOKEN_EXPIRE_MINUTES,
+            tokenExpiresIn=self.settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+            refreshTokenExpiresIn=self.settings.REFRESH_TOKEN_EXPIRE_MINUTES,
         )
 
     async def generate_token(self, user: User, refresh: bool, expires: int) -> str:
@@ -32,7 +32,7 @@ class JWTService:
                 "company_owner": user.company_owner,
                 "admin": user.admin,
                 "refresh": refresh,
-                "exp": datetime.now() + timedelta(minutes=expires),
+                "exp": datetime.now(timezone.utc) + timedelta(minutes=expires),
             },
             self.settings.REFRESH_SIGNATURE
             if refresh

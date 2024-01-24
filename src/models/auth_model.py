@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class AuthModel(BaseModel):
@@ -7,17 +7,17 @@ class AuthModel(BaseModel):
 
 
 class TokenModel(BaseModel):
-    access_token: str
-    refresh_token: str
-    token_type: str = "bearer"
-    token_expires_in: int
-    refresh_token_expires_in: int
+    acessToken: str
+    refreshToken: str
+    tokenType: str = "bearer"
+    tokenExpiresIn: int
+    refreshTokenExpiresIn: int
 
 
 class TokenData(BaseModel):
     id: int
     username: str
-    company_id: int = Field(alias="companyId")
-    company_owner: bool = Field(alias="companyOwner")
+    company_id: int
+    company_owner: bool
     admin: bool
     refresh: bool

@@ -1,3 +1,5 @@
+import datetime
+
 import jwt
 from fastapi import HTTPException, Request
 
@@ -18,20 +20,31 @@ class HasAuthRole:
 
     def __call__(self, request: Request) -> TokenData:
         try:
+            signature = (
+                self.settings.REFRESH_SIGNATURE
+                if self.refresh
+                else self.settings.TOKEN_SIGNATURE
+            )
+            lee_way = (
+                self.settings.REFRESH_TOKEN_EXPIRE_MINUTES if self.refresh else self.settings.ACCESS_TOKEN_EXPIRE_MINUTES
+            )
             token = request.headers["Authorization"].replace("Bearer ", "")
             token_decoded = jwt.decode(
                 token,
-                self.settings.REFRESH_SIGNATURE
-                if self.refresh
-                else self.settings.TOKEN_SIGNATURE,
+                signature,
                 algorithms=["HS256"],
+                leeway=datetime.timedelta(minutes=lee_way),
             )
             token_data = TokenData(**token_decoded)
             request.state.user = token_data
 
             if self.owner and not request.state.user.company_owner:
                 raise HTTPException(status_code=403)
-            if self.admin and not request.state.user.admin:
+            if (
+                self.admin
+                and not request.state.user.admin
+                and not request.state.user.company_owner
+            ):
                 raise HTTPException(status_code=403)
             return token_data
 
