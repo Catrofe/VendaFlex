@@ -21,7 +21,7 @@ class AuthService:
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if not self._encrypted.verify_password(password, user.password):
-            raise HTTPException(status_code=401, detail="Invalid password")
+            raise HTTPException(status_code=400, detail="Incorrect email or password")
 
         user = await self.update_assignature_token(user)
         return await self._jwt.create_token(user)
