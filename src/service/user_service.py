@@ -4,7 +4,7 @@ from fastapi import HTTPException
 
 from src.models.user_model import Password, UserModel, UserModelEdit, UserModelOut
 from src.repository.user_repository import UserRepository
-from src.service.BcryptService import BcryptService
+from src.service.provider.BcryptService import BcryptService
 
 
 class UserService:

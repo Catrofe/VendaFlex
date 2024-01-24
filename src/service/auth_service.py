@@ -6,8 +6,8 @@ from fastapi import HTTPException
 from src.infra.database import User
 from src.models.auth_model import TokenModel
 from src.repository.auth_repository import AuthRepository
-from src.service.BcryptService import BcryptService
-from src.service.jwt_service import JWTService
+from src.service.provider.BcryptService import BcryptService
+from src.service.provider.jwt_service import JWTService
 
 
 class AuthService:

@@ -2,7 +2,7 @@ from fastapi import HTTPException
 
 from src.models.hub_model import CreateNewHub, HubEdit, HubOut
 from src.repository.hub_repository import HubRepository
-from src.service.BcryptService import BcryptService
+from src.service.provider.BcryptService import BcryptService
 
 
 class HubService:
