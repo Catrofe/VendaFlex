@@ -15,3 +15,21 @@ class AuthRepository:
             user = query.scalar()
 
         return user or None
+
+    async def get_user_by_id(self, user_id: int) -> Optional[User]:
+        async with self._session_maker() as session:
+            query = await session.execute(select(User).where(User.id == user_id))
+            user = query.scalar()
+
+        return user or None
+
+    async def update_signature_token(
+        self, user: User, access_token: str, refresh_token: str
+    ) -> User:
+        async with self._session_maker() as session:
+            user.acess_token = access_token
+            user.refresh_token = refresh_token
+            await session.merge(user)
+            await session.commit()
+
+        return user

@@ -24,6 +24,7 @@ class JWTService:
         )
 
     async def generate_token(self, user: User, refresh: bool, expires: int) -> str:
+        assignature = user.refresh_token if refresh else user.acess_token
         return jwt.encode(
             {
                 "id": user.id,
@@ -34,8 +35,6 @@ class JWTService:
                 "refresh": refresh,
                 "exp": datetime.now(timezone.utc) + timedelta(minutes=expires),
             },
-            self.settings.REFRESH_SIGNATURE
-            if refresh
-            else self.settings.TOKEN_SIGNATURE,
+            assignature,
             algorithm="HS256",
         )
