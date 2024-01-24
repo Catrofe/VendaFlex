@@ -5,7 +5,7 @@ from typing import Any, Optional
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 from src.infra.settings import Settings
 
@@ -47,6 +47,7 @@ class Company(Base):
     company_admin: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(default=datetime.now())
     updated_at: Mapped[datetime] = mapped_column(onupdate=datetime.now(), nullable=True)
+    users: Mapped[list["User"]] = relationship(back_populates="company", lazy="joined")
 
 
 class User(Base):
@@ -58,6 +59,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(unique=True)
     phone: Mapped[str] = mapped_column(unique=True)
     company_id: Mapped[int] = mapped_column(ForeignKey("company.id"), nullable=True)
+    company: Mapped["Company"] = relationship(back_populates="users", lazy="joined")
     company_owner: Mapped[bool] = mapped_column(default=False)
     admin: Mapped[bool] = mapped_column(default=False)
     refresh_token: Mapped[Optional[str]] = mapped_column(nullable=True, default=None)

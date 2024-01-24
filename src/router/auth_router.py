@@ -15,7 +15,7 @@ async def login(body: AuthModel) -> TokenModel:
 
 @router.post(
     "/logout",
-    dependencies=[Depends(HasAuthRole(admin=True))],
+    dependencies=[Depends(HasAuthRole())],
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def logout(request: Request) -> None:
