@@ -42,3 +42,10 @@ class AuthService:
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         await self._repository.update_signature_token(user, None, None)
+
+    async def refresh_token(self, user_id: int) -> TokenModel:
+        user = await self._repository.get_user_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        user = await self.update_assignature_token(user)
+        return await self._jwt.create_token(user)

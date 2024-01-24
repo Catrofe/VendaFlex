@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, Request, status
 
 from src.models.auth_model import AuthModel, TokenModel
 from src.service.auth_service import AuthService
@@ -8,9 +8,9 @@ router = APIRouter()
 service = AuthService()
 
 
-@router.post("/login")
-async def login(request: AuthModel) -> TokenModel:
-    return await service.authenticate(request.email, request.password)
+@router.post("/login", response_model=TokenModel)
+async def login(body: AuthModel) -> TokenModel:
+    return await service.authenticate(body.email, body.password)
 
 
 @router.post(
@@ -22,6 +22,10 @@ async def logout(request: Request) -> None:
     await service.logout(request.state.user.id)
 
 
-@router.post("/refresh", dependencies=[Depends(HasAuthRole(refresh=True))])
-async def refresh() -> None:
-    raise HTTPException(status_code=status.HTTP_501_NOT_IMPLEMENTED)
+@router.post(
+    "/refresh",
+    dependencies=[Depends(HasAuthRole(refresh=True))],
+    response_model=TokenModel,
+)
+async def refresh(request: Request) -> TokenModel:
+    return await service.refresh_token(request.state.user.id)
