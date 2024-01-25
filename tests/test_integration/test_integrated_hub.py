@@ -39,6 +39,18 @@ def create_hub(change_db_url):
     )
 
 
+@pytest.fixture
+def login_user(create_hub):
+    response = client.post(
+        "/api/login",
+        json={
+            "email": "email@email.com",
+            "password": "12345678",
+        },
+    )
+    return response.json()["acessToken"]
+
+
 def test_create_hub(change_db_url):
     response = client.post(
         URL_API,
@@ -60,53 +72,76 @@ def test_create_hub(change_db_url):
     assert response.status_code == 201
 
 
-def test_get_hub_by_id(create_hub):
-    response = client.get(f"{URL_API}/1")
+def test_get_hub_by_id(login_user):
+    print(login_user)
+    response = client.get(
+        f"{URL_API}/1",
+        headers={"Authorization": login_user},
+    )
     assert response.status_code == 200
 
 
-def test_get_hub_by_id_error(change_db_url):
-    response = client.get(f"{URL_API}/1")
+def test_get_hub_by_id_error(login_user):
+    client.delete(f"{URL_API}/1", headers={"Authorization": login_user})
+    response = client.get(
+        f"{URL_API}/1",
+        headers={"Authorization": login_user},
+    )
     assert response.status_code == 404
 
 
-def test_get_all_hubs(create_hub):
-    response = client.get(URL_API)
+def test_get_all_hubs(login_user):
+    response = client.get(
+        URL_API,
+        headers={"Authorization": login_user},
+    )
     assert response.status_code == 200
     assert len(response.json()) == 1
 
 
-def test_get_all_hubs_empty(change_db_url):
-    response = client.get(URL_API)
-    assert response.status_code == 200
-    assert len(response.json()) == 0
+def test_get_all_hubs_empty(login_user):
+    client.delete(f"{URL_API}/1", headers={"Authorization": login_user})
+    response = client.get(URL_API, headers={"Authorization": login_user})
+    assert response.status_code == 404
 
 
-def test_update_hub(create_hub):
+def test_update_hub(login_user):
     response = client.put(
         f"{URL_API}/1",
         json={"name": "Zeta Car", "description": "Revendedora de carros top 1"},
+        headers={"Authorization": login_user},
     )
     assert response.status_code == 200
     assert response.json().get("description") == "Revendedora de carros top 1"
 
 
-def test_update_hub_not_found(change_db_url):
+def test_update_hub_not_found(login_user):
     response = client.put(
-        f"{URL_API}/1",
+        f"{URL_API}/2",
         json={"name": "Zeta Car", "description": "Revendedora de carros top 1"},
+        headers={"Authorization": login_user},
     )
     assert response.status_code == 404
 
 
-def test_delete_hub(create_hub):
-    response = client.delete(f"{URL_API}/1")
+def test_delete_hub(login_user):
+    response = client.delete(
+        f"{URL_API}/1",
+        headers={"Authorization": login_user},
+    )
     assert response.status_code == 204
 
-    get_hub = client.get(f"{URL_API}/1")
+    get_hub = client.get(
+        f"{URL_API}/1",
+        headers={"Authorization": login_user},
+    )
     assert get_hub.status_code == 404
 
 
-def test_delete_hub_not_found(change_db_url):
-    response = client.delete(f"{URL_API}/1")
+def test_delete_hub_not_found(login_user):
+    client.delete(f"{URL_API}/1", headers={"Authorization": login_user})
+    response = client.delete(
+        f"{URL_API}/1",
+        headers={"Authorization": login_user},
+    )
     assert response.status_code == 404

@@ -90,3 +90,15 @@ class HubRepository:
             await session.execute(delete(Company).where(Company.id == company.id))
             await session.execute(delete(Hub).where(Hub.id == hub.id))
             await session.commit()
+
+    async def get_hub_by_user_id(self, user_id: int) -> Optional[Hub]:
+        async with self.session() as session:
+            query = await session.execute(
+                select(Hub)
+                .join(Company)
+                .join(User)
+                .where(User.id == user_id)
+                .where(User.company_owner)
+            )
+            hub = query.scalar()
+        return hub or None

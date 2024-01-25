@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 
 from src.models.hub_model import CreateNewHub, HubEdit, HubOut
 from src.service.hub_service import HubService
@@ -40,12 +40,12 @@ async def get_all_hub() -> list[HubOut]:
     status_code=200,
     dependencies=[Depends(HasAuthRole(owner=True))],
 )
-async def update_hub(hub_id: int, hub: HubEdit) -> HubOut:
-    return await service.update_hub(hub_id, hub)
+async def update_hub(hub_id: int, hub: HubEdit, request: Request) -> HubOut:
+    return await service.update_hub(hub_id, hub, request)
 
 
 @router.delete(
     "/hub/{hub_id}", status_code=204, dependencies=[Depends(HasAuthRole(owner=True))]
 )
-async def delete_hub(hub_id: int) -> None:
-    return await service.delete_hub(hub_id)
+async def delete_hub(hub_id: int, request: Request) -> None:
+    return await service.delete_hub(hub_id, request)

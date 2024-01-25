@@ -22,7 +22,7 @@ class HasAuthRole:
 
     async def __call__(self, request: Request) -> TokenData:
         try:
-            token = request.headers["Authorization"].replace("Bearer ", "")
+            token = await self.verify_if_token_exists(request)
             signature, lee_way = await self.generate_signature(token)
             if not signature:
                 raise HTTPException(status_code=401)
@@ -63,3 +63,9 @@ class HasAuthRole:
     async def verify_if_user_exists(self, token: str) -> Optional[str]:
         token_decoded = jwt.decode(token, options={"verify_signature": False})
         return await self.auth_service.get_user_by_id(token_decoded["id"], self.refresh)
+
+    @staticmethod
+    async def verify_if_token_exists(request: Request) -> str:
+        if token := request.headers.get("Authorization"):
+            return token.replace("Bearer ", "")
+        raise HTTPException(status_code=401)

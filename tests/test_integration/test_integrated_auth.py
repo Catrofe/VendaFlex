@@ -110,7 +110,7 @@ def test_refresh_token_error(login_user):
 
 
 def test_refresh_token_error_404(login_user):
-    client.delete("/api/user/1")
+    client.delete("/api/user/1", headers={"Authorization": login_user["acessToken"]})
     response = client.post(
         f"{URL_API}/refresh",
         headers={"Authorization": f"Bearer {login_user['refreshToken']}"},
@@ -135,7 +135,7 @@ def test_logout_error(login_user):
 
 
 def test_logout_error_404(login_user):
-    client.delete("/api/user/1")
+    client.delete("/api/user/1", headers={"Authorization": login_user["acessToken"]})
     response = client.post(
         f"{URL_API}/logout",
         headers={"Authorization": f"Bearer {login_user['acessToken']}"},
